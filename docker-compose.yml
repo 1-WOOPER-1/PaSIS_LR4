@@ -1,0 +1,36 @@
+name: pasis-lr4
+
+services:
+  db:
+    image: postgres:18-bookworm
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?Run python -m database.configure_docker}
+      POSTGRES_DB: ${POSTGRES_DB:-pasis_db}
+      APP_DB_USER: ${POSTGRES_USER:-pasis_user}
+      APP_DB_PASSWORD: ${POSTGRES_DOCKER_PASSWORD:?Run python -m database.configure_docker}
+    ports:
+      - "127.0.0.1:${DB_HOST_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./database/docker/10_app_user.sql:/docker-entrypoint-initdb.d/10_app_user.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  db_migrate:
+    build:
+      context: .
+      dockerfile: database/Dockerfile.migrations
+    environment:
+      DATABASE_URL: ${DOCKER_DATABASE_URL:?Run python -m database.configure_docker}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+volumes:
+  postgres_data:
