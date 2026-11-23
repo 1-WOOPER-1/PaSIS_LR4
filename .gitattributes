@@ -1,0 +1,9 @@
+* text=auto
+*.py text eol=lf
+*.sql text eol=lf
+*.ini text eol=lf
+*.md text eol=lf
+*.mako text eol=lf
+*.yml text eol=lf
+Dockerfile* text eol=lf
+*.png binary
