@@ -32,5 +32,23 @@ services:
         condition: service_healthy
     restart: "no"
 
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      DATABASE_URL: ${DOCKER_DATABASE_URL:?Run python -m database.configure_docker}
+      SECRET_KEY: ${SECRET_KEY:?Run python -m database.configure_docker}
+      HASH_SCHEME: ${HASH_SCHEME:-argon2id}
+      ARGON2_TIME_COST: ${ARGON2_TIME_COST:-3}
+      ARGON2_MEMORY_COST: ${ARGON2_MEMORY_COST:-65536}
+      ARGON2_PARALLELISM: ${ARGON2_PARALLELISM:-2}
+      PORT: ${PORT:-8000}
+    ports:
+      - "127.0.0.1:${PORT:-8000}:${PORT:-8000}"
+    depends_on:
+      db_migrate:
+        condition: service_completed_successfully
+
 volumes:
   postgres_data:
