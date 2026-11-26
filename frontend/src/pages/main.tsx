@@ -103,10 +103,22 @@ export function Main() {
     <main className="w-full h-screen flex flex-col justify-center item-center">
       <div className="mx-auto w-md border p-4 rounded-xl border-border">
         {user && (
-          <div className="text-left">
-            <p className="text-lg mb-4 text-center text-white">
-              Добро пожаловать, {user.login}!
-            </p>
+          <>
+            <div className="flex justify-between">
+              <p className="text-lg mb-4 text-center text-white">
+                Добро пожаловать, {user.login}!
+              </p>
+              <button
+                className="bg-blue-950 rounded-md text-sm px-2 py-1 h-fit text-white"
+                onClick={() => {
+                  setToken(null)
+                  localStorage.removeItem("token")
+                  setToken(null)
+                }}
+              >
+                Выйти
+              </button>
+            </div>
             <table>
               <tbody>
                 <tr>
@@ -123,7 +135,7 @@ export function Main() {
                 </tr>
               </tbody>
             </table>
-          </div>
+          </>
         )}
 
         <h2 className="mt-4 text-left">Список пользователей</h2>
