@@ -11,6 +11,7 @@ from sqlalchemy import select, text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.dialects.postgresql import insert
 from database.queries import permission_codes_for_user
 from backend.schemas import LoginRequest, RegistrationRequest
@@ -49,6 +50,13 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="PaSIS LR4", lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 
 @app.get("/api/health")
